@@ -64,7 +64,7 @@ function App() {
         onChange={(e) => setTextValue(e.target.value)} // onChange handler
         isValid={isValid(textValue)} // Pass validation result
       />
-            <TextField
+      <TextField
         label="egaa"
         type="longtext"
         placeholder=""
@@ -72,6 +72,7 @@ function App() {
         onChange={(e) => setTextValue(e.target.value)} // onChange handler
         isValid={isValid(textValue)} // Pass validation result
       />
+      <TextField type='dropdown' />
     </div>
   );
 }
