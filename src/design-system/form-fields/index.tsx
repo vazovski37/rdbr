@@ -1,3 +1,4 @@
+import { image } from 'html2canvas/dist/types/css/types/image';
 import React, { useState } from 'react';
 
 interface FormFieldProps {
@@ -7,6 +8,8 @@ interface FormFieldProps {
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   isValid?: boolean;
+  errorMessage?: string; 
+  successMessage?: string;
   onAgentAdd?: () => void;
   className?: string;
   options?: string[];
@@ -14,10 +17,9 @@ interface FormFieldProps {
   imageUrl?: string;
   onImageUpload?: (file: File) => void;
   onImageDelete?: () => void;
-  isRental?: boolean; 
+  isRental?: boolean;
   onRadioChange?: (isRental: boolean) => void;
 }
-
 
 const FormField = ({
   label,
@@ -26,6 +28,8 @@ const FormField = ({
   value = '',
   onChange,
   isValid = true,
+  errorMessage = 'ჩაწერეთ ვალიდური მონაცემები', 
+  successMessage = 'მინიმუმ ორი სიმბოლო', 
   onAgentAdd,
   className = '',
   options,
@@ -33,23 +37,22 @@ const FormField = ({
   imageUrl,
   isRental = true,
   onImageUpload,
-  onImageDelete, // Function for deleting the image
+  onImageDelete,
   onRadioChange,
+  
 }: FormFieldProps) => {
   const [hasTyped, setHasTyped] = useState(false);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState(value);
-  const [selectedRadio, setSelectedRadio] = useState<boolean>(isRental); 
-
+  const [selectedRadio, setSelectedRadio] = useState<boolean>(isRental);
 
   const handleRadioChange = (value: boolean) => {
     setSelectedRadio(value);
     if (onRadioChange) {
-      onRadioChange(value); 
+      onRadioChange(value);
     }
   };
 
-  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setHasTyped(true);
     if (onChange) onChange(e);
@@ -74,27 +77,28 @@ const FormField = ({
   };
 
   return (
-    <div className={`relative w-full flex flex-col items-start justify-start gap-1 text-left text-sm text-gray font-firago ${className}`}>
-
+    <div className={`relative ${ type === 'image' || type === 'longtext' ? 'w-full' : 'w-fit' } flex flex-col items-start justify-start text-left text-sm text-gray font-firago ${className}`}>
       {label && <label className="self-stretch text-[#021526] relative font-medium mb-1">{label} *</label>}
 
       {type === 'text' && (
         <>
-        <input
-          type="text"
-          placeholder={placeholder}
-          value={value}
-          onChange={handleChange}
-          className={`w-96 text-[#021526] p-2.5 rounded-md border-[1px] border-solid ${
-            !hasTyped ? 'border-lightslategray' : isValid ? 'border-forestgreen' : 'border-orangered'
-          } focus:outline-none`}
+          <input
+            type="text"
+            placeholder={placeholder}
+            value={value}
+            onChange={handleChange}
+            className={`w-[360px] text-[#021526] p-2.5 rounded-md border-[1px] border-solid ${
+              !hasTyped ? 'border-lightslategray' : isValid ? 'border-forestgreen' : 'border-orangered'
+            } focus:outline-none`}
           />
-        <div className="flex flex-row items-center justify-start gap-[7px]">
-          <span className={`material-symbols-outlined ${hasTyped && !isValid ? 'text-orangered' : isValid ? 'text-forestgreen' : 'border-lightslategray'}`}>check</span>
-          <div className={`relative ${hasTyped && !isValid ? 'text-orangered' : isValid ? 'text-forestgreen' : 'border-lightslategray'}`}>
-            {hasTyped ? (isValid ? 'მინიმუმ ორი სიმბოლო' : 'ჩაწერეთ ვალიდური მონაცემები') : 'მინიმუმ ორი სიმბოლო'}
+          <div className="flex flex-row items-center justify-start gap-[7px]">
+            <span className={`material-symbols-outlined ${hasTyped && !isValid ? 'text-orangered' : isValid ? 'text-forestgreen' : 'text-[#021526]'}`}>
+              check
+            </span>
+            <div className={`relative text-[14px] ${hasTyped && !isValid ? 'text-orangered' : isValid ? 'text-forestgreen' : 'text-[#021526]'}`}>
+              {hasTyped ? (isValid ? successMessage : errorMessage) : successMessage}
+            </div>
           </div>
-        </div>
         </>
       )}
 
@@ -104,17 +108,19 @@ const FormField = ({
             placeholder={placeholder}
             value={value}
             onChange={handleChange}
-            className={`w-96 p-2.5 rounded-md text-[#021526] border-[1px] border-solid ${
+            className={`w-[768.4px] h-[157.4px] p-2.5 rounded-md text-[#021526] border-[1px] border-solid ${
               !hasTyped ? 'border-lightslategray' : isValid ? 'border-forestgreen' : 'border-orangered'
             } focus:outline-none resize-none`}
             rows={5}
           />
-        <div className="flex flex-row items-center justify-start gap-[7px]">
-          <span className={`material-symbols-outlined ${hasTyped && !isValid ? 'text-orangered' : isValid ? 'text-forestgreen' : 'border-lightslategray'}`}>check</span>
-          <div className={`relative ${hasTyped && !isValid ? 'text-orangered' : isValid ? 'text-forestgreen' : 'border-lightslategray'}`}>
-            {hasTyped ? (isValid ? 'მინიმუმ ორი სიმბოლო' : 'ჩაწერეთ ვალიდური მონაცემები') : 'მინიმუმ ორი სიმბოლო'}
+          <div className="flex flex-row items-center justify-start gap-[7px]">
+            <span className={`material-symbols-outlined ${hasTyped && !isValid ? 'text-orangered' : isValid ? 'text-forestgreen' : 'text-[#021526]'}`}>
+              check
+            </span>
+            <div className={`relative  text-[14px] ${hasTyped && !isValid ? 'text-orangered' : isValid ? 'text-forestgreen' : 'text-[#021526]'}`}>
+              {hasTyped ? (isValid ? successMessage : errorMessage) : successMessage}
+            </div>
           </div>
-        </div>
         </>
       )}
 
@@ -122,7 +128,7 @@ const FormField = ({
         <div className="relative w-full text-[#021526]">
           {/* Dropdown Button */}
           <div
-            className={`w-96 p-2.5 rounded-md border-[1px] border-solid border-lightslategray flex justify-between items-center cursor-pointer ${
+            className={`w-[360px] p-2.5 rounded-md border-[1px] border-solid border-lightslategray flex justify-between items-center cursor-pointer ${
               isDropdownOpen ? 'rounded-b-none border-b-0' : 'rounded-md'
             }`}
             onClick={toggleDropdown}
@@ -135,11 +141,11 @@ const FormField = ({
 
           {/* Dropdown Options */}
           {isDropdownOpen && (
-            <div className="absolute w-96 rounded-b-md mt-0 bg-white shadow-lg z-10">
+            <div className="absolute w-[360px] rounded-b-md mt-0 bg-white shadow-lg z-10">
               {/* Agent Add Option */}
               {onAgentAdd && (
                 <div className="w-full bg-white border-[1px] border-solid border-lightslategray p-2.5 hover:bg-gray-100 cursor-pointer flex items-center" onClick={onAgentAdd}>
-                  <span className="material-symbols-outlined">add_circle</span>
+                  <span className="material-symbols-outlined text-[20px]">add_circle</span>
                   <span className="ml-2">დაამატე აგენტი</span>
                 </div>
               )}
@@ -147,9 +153,9 @@ const FormField = ({
               {options?.map((option, index) => (
                 <div
                   key={index}
-                  className={`w-full border-[1px] bg-white border-solid border-t-0 border-lightslategray p-2.5 hover:bg-gray-100 cursor-pointer flex items-center ${
+                  className={`w-full border-[1px] bg-white border-solid border-lightslategray p-2.5 hover:bg-gray-100 cursor-pointer flex items-center ${
                     index === options.length - 1 ? 'rounded-b-md' : ''
-                  }`}
+                  } ${!onAgentAdd &&  index === 0 ? 'border-t-1' : 'border-t-0' } `}
                   onClick={() => handleSelect(option)}
                 >
                   <div className="relative">{option}</div>
@@ -164,15 +170,13 @@ const FormField = ({
         <div className="w-full relative rounded-lg bg-white border-darkslategray border-[1px] border-dashed box-border h-[140px] cursor-pointer">
           {!imageUrl ? (
             <div className="relative w-full h-full flex items-center justify-center">
-              {/* Invisible file input to trigger upload on click anywhere within the div */}
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
                 className="absolute inset-0 opacity-0 cursor-pointer"
               />
-              {/* Clickable Circle Icon for Upload */}
-              <span 
+              <span
                 className="material-symbols-outlined text-2xl z-10 cursor-pointer"
                 onClick={() => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}
               >
@@ -182,14 +186,10 @@ const FormField = ({
           ) : (
             <div className="w-full relative rounded-lg h-[140px] flex items-center justify-center">
               <div className="relative">
-                <img
-                  className="h-[82px] w-auto rounded-lg"
-                  alt="Uploaded"
-                  src={imageUrl}
-                />
+                <img className="h-[82px] w-auto rounded-lg" alt="Uploaded" src={imageUrl} />
                 <button
                   type="button"
-                  onClick={onImageDelete} 
+                  onClick={onImageDelete}
                   className="absolute cursor-pointer bottom-0 right-0 p-1 bg-white border border-gray-300 rounded-full shadow-md translate-x-1/2 translate-y-1/2"
                 >
                   <span className="material-symbols-outlined text-base">delete</span>
@@ -199,7 +199,7 @@ const FormField = ({
           )}
         </div>
       )}
-      
+
       {type === 'radio' && (
         <div className="flex gap-6 mt-4">
           <label className="flex items-center cursor-pointer p-2 rounded-md">
@@ -209,7 +209,7 @@ const FormField = ({
               value="rent"
               checked={selectedRadio}
               onChange={() => handleRadioChange(true)}
-              className="form-radio accent-black mr-2" 
+              className="form-radio accent-black mr-2"
             />
             <span className="text-sm text-black">ქირავდება</span>
           </label>
@@ -221,7 +221,7 @@ const FormField = ({
               value="sale"
               checked={!selectedRadio}
               onChange={() => handleRadioChange(false)}
-              className="form-radi accent-black mr-2" 
+              className="form-radi accent-black mr-2"
             />
             <span className="text-sm text-black">იყიდება</span>
           </label>

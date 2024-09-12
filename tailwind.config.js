@@ -1,45 +1,51 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./src/**/*.{js,jsx,ts,tsx}"], // Scan all relevant files
+  content: [
+    "./src/**/*.{js,jsx,ts,tsx}", // Adjust paths to match your project structure
+  ],
   theme: {
     extend: {
       colors: {
-        gray: "rgba(2, 21, 38, 0.5)", // Custom gray color
-        white: "#fff", // Custom white color
-        blueviolet: "#9747ff", // CTA border color
-        lightslategray: "#808a93", // CTA background color
-        orangered: "#f93b1d", // Orangered for primary state
-        orangeredHover: "#df3014", // Orangered hover state
-        gainsboro: '#DCDCDC', // Cus
-        forestgreen: "#45A849"
+        white: "#fff",
+        gray: "#021526",
+        lightslategray: "#808a93",
+        darkslategray: "#2d3648",
+        orangered: "#f93b1d",
+        orangeredHover: "#e5371a", // Hover effect for primary button
+        forestgreen: "#228B22", // Validation success color
+        orangered: "#f93b1d", // Validation error color
       },
       fontFamily: {
-        firago: ["FiraGO", "sans-serif"], // Custom font family with a fallback
-      },
-      fontSize: {
-        sm: "14px", // Font size for small buttons/text
-        base: "16px", // Font size for base/medium text
-        inherit: "inherit", // Added inherit option for font size
-      },
-      spacing: {
-        2.5: "0.625rem", // Spacing for padding
-        3.5: "0.875rem", // Additional spacing if needed
-        4: "1rem", // Spacing for larger padding
-        22: "5.5rem", // Icon size
+        firago: ["FiraGO", "sans-serif"], // Ensure FiraGO is loaded in your project
+        "helvetica-neue": ["Helvetica Neue", "sans-serif"], // Add custom fonts as needed
       },
       borderRadius: {
-        lg: "0.5rem", // Large border radius
-        xl: "0.625rem", // Extra large border radius for large buttons
+        "3xs": "10px",
+        lg: "12px",
       },
-      borderWidth: {
-        1: "1px", // Custom border width for 1px
+      spacing: {
+        "2.5": "10px",
+        "3.5": "14px",
+        "6": "24px",
+        "22": "88px",
+        "120": "480px",
       },
-      height: {
-        47: "47px", // Custom height for large CTA
+      fontSize: {
+        sm: "14px",
+        base: "16px",
+        lg: "18px",
+        xl: "20px",
+        "2xl": "24px",
+        "3xl": "32px",
+      },
+      boxShadow: {
+        small: "5px 5px 4px rgba(0, 0, 0, 0.08)",
+        md: "0 4px 6px rgba(0, 0, 0, 0.1)",
       },
     },
   },
   corePlugins: {
-    preflight: false, // Disable Tailwind's base styles (optional)
+    preflight: false, // Disable Preflight to avoid conflicting with global styles
   },
+  plugins: [],
 };

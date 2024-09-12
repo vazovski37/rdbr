@@ -6,15 +6,10 @@ interface CTAProps {
   type?: 'primary' | 'secondary' | 'grey'; // Type of the CTA: primary or secondary
   className?: string; // Optional additional className for styling
   iconSrc?: string; // Optional icon source for the 'l' size
+  onClick?: () => void; // Function to execute when the CTA is clicked
 }
 
-const Cta: React.FC<CTAProps> = ({
-  label,
-  size = 'm',
-  type = '',
-  className = '',
-  iconSrc,
-}) => {
+const Cta = ({ label, size = 'm', type = 'primary', className = '', iconSrc, onClick }: CTAProps) => {
   // Function to determine base styles based on size
   const getSizeStyles = () => {
     switch (size) {
@@ -35,7 +30,7 @@ const Cta: React.FC<CTAProps> = ({
       case 'primary':
         return 'bg-orangered text-white hover:bg-orangeredHover';
       case 'secondary':
-        return 'border-orangered border-[1px] border-solid text-orangered hover:bg-orangered hover:text-white hover:border-none';
+        return 'border-orangered border-[1px] border-solid text-orangered hover:bg-orangered hover:text-white';
       case 'grey':
         return 'rounded-lg bg-white border-lightslategray border-[1px] border-solid box-border text-[14px] font-medium font-firago text-lightslategray text-center hover:bg-lightslategray hover:text-white';
       default:
@@ -45,12 +40,11 @@ const Cta: React.FC<CTAProps> = ({
 
   return (
     <div
-      className={`cursor-pointer relative rounded-lg flex  flex-row items-center justify-center box-border font-firago ${getSizeStyles()} ${getTypeStyles()} ${className}`}
+      className={`cursor-pointer relative rounded-lg flex flex-row items-center justify-center box-border font-firago ${getSizeStyles()} ${getTypeStyles()} ${className}`}
+      onClick={onClick} // Added onClick event handler
     >
       {size === 'l' && (
-        // <img className="w-[22px] h-[22px] mr-2" alt="" src={iconSrc} />
         <span className="material-symbols-outlined w-[22px] h-[22px] mr-2">add</span>
-
       )}
       <div className="relative w-max font-medium">{label}</div>
     </div>

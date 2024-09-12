@@ -1,8 +1,8 @@
 import React from 'react';
-import BedroomIcon from '../../icons/BedroomIcon';
-import AreaIcon from '../../icons/AreaIcon';
-import LocationIcon from '../../icons/LocationIcon';
-import PostalCodeIcon from '../../icons/PostalCodeIcon';
+import BedroomIcon from '../../assets/icons/BedroomIcon';
+import AreaIcon from '../../assets/icons/AreaIcon';
+import LocationIcon from '../../assets/icons/LocationIcon';
+import PostalCodeIcon from '../../assets/icons/PostalCodeIcon';
 
 interface InfoItemProps {
   icon: React.ReactNode; // Updated to accept a ReactNode for the icon

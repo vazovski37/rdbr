@@ -1,8 +1,8 @@
 import React from 'react';
-import LocationIcon from '../../icons/LocationIcon';
-import BedroomIcon from '../../icons/BedroomIcon';
-import AreaIcon from '../../icons/AreaIcon';
-import PostalCodeIcon from '../../icons/PostalCodeIcon';
+import LocationIcon from '../../assets/icons/LocationIcon';
+import BedroomIcon from '../../assets/icons/BedroomIcon';
+import AreaIcon from '../../assets/icons/AreaIcon';
+import PostalCodeIcon from '../../assets/icons/PostalCodeIcon';
 import Tag from '../tag';
 
 // Define the props interface for the Card component
