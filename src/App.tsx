@@ -22,6 +22,13 @@ function App() {
     setUploadedImage(undefined); // Reset the uploaded image state
   };
 
+  const [isRental, setIsRental] = useState<boolean>(true); // State to manage the selected radio button
+
+  // Handle radio button change
+  const handleRadioChange = (value: boolean) => {
+    setIsRental(value); // Update the state based on the selected radio option
+  };
+
   return (
     <div className="App ml-2">
       {/* Text Input Field */}
@@ -70,6 +77,13 @@ function App() {
           <img src={uploadedImage} alt="Uploaded Preview" className="w-32 h-32 object-cover rounded-md" />
         </div>
       )}
+
+<FormField
+        label="Choose Option"
+        type="radio" // Set type to 'radio' for custom radio buttons
+        isRental={isRental} // Pass the current state of isRental
+        onRadioChange={handleRadioChange} // Function to handle radio button changes
+      />
     </div>
   );
 }

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 interface FormFieldProps {
   label?: string;
-  type?: 'text' | 'longtext' | 'dropdown' | 'image';
+  type?: 'text' | 'longtext' | 'dropdown' | 'image' | 'radio';
   placeholder?: string;
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
@@ -13,8 +13,11 @@ interface FormFieldProps {
   onSelect?: (option: string) => void;
   imageUrl?: string;
   onImageUpload?: (file: File) => void;
-  onImageDelete?: () => void; // Function to handle image deletion
+  onImageDelete?: () => void;
+  isRental?: boolean; 
+  onRadioChange?: (isRental: boolean) => void;
 }
+
 
 const FormField = ({
   label,
@@ -28,13 +31,25 @@ const FormField = ({
   options,
   onSelect,
   imageUrl,
+  isRental = true,
   onImageUpload,
   onImageDelete, // Function for deleting the image
+  onRadioChange,
 }: FormFieldProps) => {
   const [hasTyped, setHasTyped] = useState(false);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState(value);
+  const [selectedRadio, setSelectedRadio] = useState<boolean>(isRental); 
 
+
+  const handleRadioChange = (value: boolean) => {
+    setSelectedRadio(value);
+    if (onRadioChange) {
+      onRadioChange(value); 
+    }
+  };
+
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setHasTyped(true);
     if (onChange) onChange(e);
@@ -60,10 +75,9 @@ const FormField = ({
 
   return (
     <div className={`relative w-full flex flex-col items-start justify-start gap-1 text-left text-sm text-gray font-firago ${className}`}>
-      {/* Label */}
+
       {label && <label className="self-stretch text-[#021526] relative font-medium mb-1">{label} *</label>}
 
-      {/* Text Input Field */}
       {type === 'text' && (
         <>
         <input
@@ -84,7 +98,6 @@ const FormField = ({
         </>
       )}
 
-      {/* Long Text Input Field */}
       {type === 'longtext' && (
         <>
           <textarea
@@ -104,7 +117,7 @@ const FormField = ({
         </div>
         </>
       )}
-      {/* Dropdown Field */}
+
       {type === 'dropdown' && (
         <div className="relative w-full text-[#021526]">
           {/* Dropdown Button */}
@@ -147,7 +160,6 @@ const FormField = ({
         </div>
       )}
 
-      {/* Image Upload Field */}
       {type === 'image' && (
         <div className="w-full relative rounded-lg bg-white border-darkslategray border-[1px] border-dashed box-border h-[140px] cursor-pointer">
           {!imageUrl ? (
@@ -185,6 +197,34 @@ const FormField = ({
               </div>
             </div>
           )}
+        </div>
+      )}
+      
+      {type === 'radio' && (
+        <div className="flex gap-6 mt-4">
+          <label className="flex items-center cursor-pointer p-2 rounded-md">
+            <input
+              type="radio"
+              name="transactionType"
+              value="rent"
+              checked={selectedRadio}
+              onChange={() => handleRadioChange(true)}
+              className="form-radio accent-black mr-2" 
+            />
+            <span className="text-sm text-black">ქირავდება</span>
+          </label>
+
+          <label className="flex items-center cursor-pointer p-2 rounded-md">
+            <input
+              type="radio"
+              name="transactionType"
+              value="sale"
+              checked={!selectedRadio}
+              onChange={() => handleRadioChange(false)}
+              className="form-radi accent-black mr-2" 
+            />
+            <span className="text-sm text-black">იყიდება</span>
+          </label>
         </div>
       )}
     </div>
