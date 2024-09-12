@@ -1,8 +1,42 @@
 import React, { useState } from 'react';
 import './App.css';
 import FormField from './design-system/form-fields'; // Import your FormField component
+import ListingPageInfo from './design-system/listing-page-info';
 
 function App() {
+
+  const propertyData = {
+    id: 1,
+    address: "შარტავას 2ა",
+    zip_code: "0101",
+    price: 100000,
+    area: 100.5,
+    bedrooms: 3,
+    is_rental: 0,
+    city_id: 1,
+    description: "სახლი ლიანდაგთან",
+    created_at: "2024-08-07T10:46:53.000000Z",
+    city: {
+      id: 1,
+      name: "სოხუმი",
+      region_id: 1,
+      region: {
+        id: 1,
+        name: "აფხაზეთი",
+      },
+    },
+    agent_id: 1,
+    agent: {
+      id: 1,
+      name: "gela",
+      surname: "gocha",
+      email: "gela@redberry.ge",
+      phone: "555555555",
+      avatar:
+        "https://api.real-estate-manager.redberryinternship.com/images/hmnVAO6LEytzoxFz8vRqBCry6ba1wvHvo2YxPXJW.jpg",
+    },
+  };
+
   const [textValue, setTextValue] = useState('');
   const [uploadedImage, setUploadedImage] = useState<string | undefined>(undefined); // State for uploaded image initialized with undefined
 
@@ -84,6 +118,16 @@ function App() {
         isRental={isRental} // Pass the current state of isRental
         onRadioChange={handleRadioChange} // Function to handle radio button changes
       />
+
+
+<ListingPageInfo
+    price={`${propertyData.price.toLocaleString()} ₾`} // Format the price with a locale string
+    location={`${propertyData.city.name}, ${propertyData.address}`} // Combine city name and address
+    area={propertyData.area.toString()} // Convert area to string
+    areaUnit="მ²" // Static value for area unit
+    bedrooms={propertyData.bedrooms} // Number of bedrooms
+    postalCode={propertyData.zip_code} // Postal code
+  />
     </div>
   );
 }
