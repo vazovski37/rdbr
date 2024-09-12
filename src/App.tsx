@@ -1,78 +1,75 @@
 import React, { useState } from 'react';
 import './App.css';
-import Tag from './design-system/tag';
-import Cta from './design-system/cta';
-import Dropdown from './design-system/filter-item';
-import Filter from './components/filter';
-import FilterBadge from './design-system/filter-badge';
-import Card, { CardProps } from './design-system/card';
-import TextField from './design-system/fields';
+import FormField from './design-system/form-fields'; // Import your FormField component
 
 function App() {
   const [textValue, setTextValue] = useState('');
+  const [uploadedImage, setUploadedImage] = useState<string | undefined>(undefined); // State for uploaded image initialized with undefined
 
   // Validation function to check if the input is valid
   const isValid = (value: string): boolean => {
     return value.length >= 2; // Example: Input must be at least 2 characters long
   };
 
-  const data = [
-    {
-      id: 1,
-      address: "შარტავას 2ა",
-      zip_code: "0101",
-      price: 100000,
-      area: 100.5,
-      bedrooms: 3,
-      is_rental: 0,
-      image:
-        "https://api.real-estate-manager.redberryinternship.ge/storage/agent_avatars/KXhmcUIaDo7TTkgfCBraeUhx3Nd6eTKrmsXOWkPh.png",
-      city_id: 1,
-      city: {
-        id: 1,
-        name: "სოხუმი",
-        region_id: 1,
-        region: {
-          id: 1,
-          name: "აფხაზეთი",
-        },
-      },
-    },
-  ];
+  // Handle image upload
+  const handleImageUpload = (file: File) => {
+    const imageUrl = URL.createObjectURL(file); // Create a URL for the uploaded image
+    setUploadedImage(imageUrl); // Set the uploaded image URL
+  };
 
-  // Utility function to map API data to CardProps
-  const mapDataToCardProps = (data: any): CardProps => {
-    return {
-      imageSrc: data.image,
-      price: `${data.price.toLocaleString()} ₾`,
-      location: `${data.city.name}, ${data.address}`,
-      bedrooms: data.bedrooms,
-      area: `${data.area} მ²`,
-      postalCode: data.zip_code,
-      status: data.is_rental ? 'დაქირავება' : 'იყიდება',
-    };
+  // Handle image delete
+  const handleImageDelete = () => {
+    setUploadedImage(undefined); // Reset the uploaded image state
   };
 
   return (
     <div className="App ml-2">
-
-      <TextField
-        label="egaa"
+      {/* Text Input Field */}
+      <FormField
+        label="Text Input"
         type="text"
-        placeholder=""
+        placeholder="Enter text"
         value={textValue} // Controlled value
         onChange={(e) => setTextValue(e.target.value)} // onChange handler
         isValid={isValid(textValue)} // Pass validation result
       />
-      <TextField
-        label="egaa"
+
+      {/* Long Text Input Field */}
+      <FormField
+        label="Long Text Input"
         type="longtext"
-        placeholder=""
+        placeholder="Enter long text"
         value={textValue} // Controlled value
         onChange={(e) => setTextValue(e.target.value)} // onChange handler
         isValid={isValid(textValue)} // Pass validation result
       />
-      <TextField type='dropdown' />
+
+      {/* Dropdown Field */}
+      <FormField
+        label="Select Region"
+        type="dropdown"
+        placeholder="აირჩიე"
+        options={['იმერეთი', 'სამეგრელო', 'გურია']}
+        onSelect={(selectedOption) => console.log(selectedOption)}
+        onAgentAdd={() => console.log('Agent added')}
+      />
+
+      {/* Image Upload Field */}
+      <FormField
+        label="Upload Image"
+        type="image" // Set type to 'image'
+        imageUrl={uploadedImage} // Pass the uploaded image URL or undefined if no image is uploaded
+        onImageUpload={handleImageUpload} // Function to handle image upload
+        onImageDelete={handleImageDelete} // Function to handle image deletion
+      />
+
+      {/* Display uploaded image preview */}
+      {uploadedImage && (
+        <div className="mt-4">
+          <p>Uploaded Image Preview:</p>
+          <img src={uploadedImage} alt="Uploaded Preview" className="w-32 h-32 object-cover rounded-md" />
+        </div>
+      )}
     </div>
   );
 }
