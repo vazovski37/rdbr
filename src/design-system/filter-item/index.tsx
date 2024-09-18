@@ -21,7 +21,7 @@ const Dropdown = ({ label, children, isOpen, onClick }: DropdownProps) => {
       </div>
 
       {isOpen && (
-        <div className="origin-top-left absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
+        <div className="origin-top-left absolute left-0 mt-2 w-max rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
           <div className="py-1">{children}</div>
         </div>
       )}

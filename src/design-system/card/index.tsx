@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate from React Router
 import LocationIcon from '../../assets/icons/LocationIcon';
 import BedroomIcon from '../../assets/icons/BedroomIcon';
 import AreaIcon from '../../assets/icons/AreaIcon';
@@ -7,6 +8,7 @@ import Tag from '../tag';
 
 // Define the props interface for the Card component
 export interface CardProps {
+  id: number; // Add ID prop to navigate to the specific route
   imageSrc: string; // Image source for the card
   price: string; // Price to display formatted with currency
   location: string; // Location text
@@ -17,6 +19,7 @@ export interface CardProps {
 }
 
 const Card = ({
+  id,
   imageSrc,
   price,
   location,
@@ -25,12 +28,22 @@ const Card = ({
   postalCode,
   status,
 }: CardProps) => {
+  const navigate = useNavigate(); // Initialize the navigate function
+
+  // Function to handle card click
+  const handleCardClick = () => {
+    navigate(`/house/${id}`); // Navigate to the house details page
+  };
+
   return (
-    <div className="w-[384px] h-[455] cursor-pointer relative flex flex-col text-left text-[28px] text-gray-100 font-firago self-stretch bg-white border border-solid border-gainsboro  rounded-lg overflow-hidden hover:shadow-[5px_5px_12px_rgba(2,_21,_38,_0.08)]">
+    <div
+      onClick={handleCardClick} // Add onClick event handler
+      className="w-[382.4px] h-[455px] cursor-pointer relative flex flex-col text-left text-[28px] text-gray-100 font-firago bg-white border border-solid border-lightslategray rounded-lg overflow-hidden hover:shadow-[5px_5px_12px_rgba(2,_21,_38,_0.08)]"
+    >
       {/* Image Section with Aspect Ratio */}
-      <div className="w-full aspect-[384/307]">
+      <div className="w-full aspect-[382.4/307]">
         <img
-          className="w-full h-full object-cover rounded-t-lg"
+          className="w-full h-[307px] object-cover rounded-t-lg"
           alt="Property Image"
           src={imageSrc}
         />

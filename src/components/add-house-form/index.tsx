@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import FormField from '../../design-system/form-fields/index';
-import AddAgent from '../../components/add-agent/index'; 
-import { fetchAgents } from '../../services/fetchServices';
+import { fetchAgents } from '../../services/agentServices';
+import useFetchRegions from '../../hooks/useFetchRegions';
+import useFetchCities from '../../hooks/useFetchCities';
+import useAgentModal from '../../hooks/useAgentModal'; // Import the custom hook
 
 interface AddHouseFormProps {
   onFormChange: (data: any) => void;
@@ -17,7 +19,8 @@ interface FormData {
   bedrooms: string;
   description: string;
   agent: string;
-  imageUrl: string;
+  imageFile: File | null;
+  isRental: string; // Add isRental to FormData as a string
 }
 
 interface Agent {
@@ -27,7 +30,6 @@ interface Agent {
 }
 
 const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
-  const [isRental, setIsRental] = useState<boolean>(true);
   const [formData, setFormData] = useState<FormData>({
     address: '',
     postalCode: '',
@@ -38,14 +40,17 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
     bedrooms: '',
     description: '',
     agent: '',
-    imageUrl: '',
+    imageFile: null,
+    isRental: '1', // Initialize isRental as '1' for rental by default
   });
 
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false); 
-  const [agents, setAgents] = useState<Agent[]>([]); 
+  const [agents, setAgents] = useState<Agent[]>([]);
+  const { regions } = useFetchRegions();
+  const { cities } = useFetchCities();
+  const { openAgentModal, AgentModal } = useAgentModal(); // Use the custom hook
 
   useEffect(() => {
-    loadAgents(); 
+    loadAgents();
   }, []);
 
   const loadAgents = async () => {
@@ -57,33 +62,20 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
     }
   };
 
-  const updateFormData = (key: keyof FormData, value: string) => {
+  const updateFormData = (key: keyof FormData, value: any) => {
     const updatedData = { ...formData, [key]: value };
     setFormData(updatedData);
     onFormChange(updatedData);
   };
 
   const handleImageUpload = (file: File) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const result = reader.result as string;
-      updateFormData('imageUrl', result);
-      console.log('Image uploaded:', file);
-    };
-    reader.readAsDataURL(file);
+    updateFormData('imageFile', file);
+    console.log('Image uploaded:', file);
   };
 
   const handleImageDelete = () => {
-    updateFormData('imageUrl', '');
+    updateFormData('imageFile', null);
     console.log('Image deleted');
-  };
-
-  const handleAddAgentModal = () => {
-    setIsModalOpen(true); 
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false); 
   };
 
   return (
@@ -94,10 +86,10 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
         <FormField
           type="radio"
           label=""
-          isRental={isRental}
+          isRental={formData.isRental === '1'}
           onRadioChange={(value) => {
-            setIsRental(value);
-            onFormChange({ ...formData, isRental: value });
+            const isRentalValue = value ? '1' : '0'; // Convert boolean to '1' or '0'
+            updateFormData('isRental', isRentalValue); // Update formData with '0' or '1'
           }}
         />
       </div>
@@ -129,15 +121,24 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
           <FormField
             type="dropdown"
             label="რეგიონი"
-            onAgentAdd={() => {}}
-            options={['კახეთი', 'იმერეთი']}
-            onSelect={(value) => updateFormData('region', value)}
+            options={regions.map(region => region.name)}
+            onSelect={(value) => {
+              const selectedRegion = regions.find(region => region.name === value);
+              if (selectedRegion) {
+                updateFormData('region', selectedRegion.id.toString());
+              }
+            }}
           />
           <FormField
             type="dropdown"
             label="ქალაქი"
-            options={['თელავი', 'ქუთაისი']}
-            onSelect={(value) => updateFormData('city', value)}
+            options={cities.filter(city => city.region_id.toString() === formData.region).map(city => city.name)}
+            onSelect={(value) => {
+              const selectedCity = cities.find(city => city.name === value);
+              if (selectedCity) {
+                updateFormData('city', selectedCity.id.toString());
+              }
+            }}
           />
         </div>
       </div>
@@ -179,6 +180,8 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
             />
           </div>
         </div>
+
+        {/* Description */}
         <FormField
           type="longtext"
           label="აღწერა"
@@ -190,10 +193,11 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
           successMessage="მინიმუმ ხუთი სიტყვა"
         />
 
+        {/* Image Upload */}
         <FormField
           type="image"
           label="ატვირთეთ ფოტო"
-          imageUrl={formData.imageUrl}
+          imageUrl={formData.imageFile ? URL.createObjectURL(formData.imageFile) : ''}
           onImageUpload={handleImageUpload}
           onImageDelete={handleImageDelete}
         />
@@ -206,21 +210,20 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
           <FormField
             type="dropdown"
             label="აირჩიე"
-            options={agents.map(agent => `${agent.name} ${agent.surname}`)} 
-            onSelect={(value) => updateFormData('agent', value)}
-            onAgentAdd={handleAddAgentModal}  
+            options={agents.map(agent => `${agent.name} ${agent.surname}`)}
+            onSelect={(value) => {
+              const selectedAgent = agents.find(agent => `${agent.name} ${agent.surname}` === value);
+              if (selectedAgent) {
+                updateFormData('agent', selectedAgent.id.toString());  // Set the agent ID correctly
+              }
+            }}
+            onAgentAdd={openAgentModal}  
           />
         </div>
       </div>
 
       {/* Add Agent Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg w-[1000px] h-[784px]">
-            <AddAgent onCancel={handleCloseModal} onAddAgentSuccess={() => { handleCloseModal(); loadAgents(); }} />
-          </div>
-        </div>
-      )}
+      <AgentModal />
     </div>
   );
 };

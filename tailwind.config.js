@@ -7,13 +7,14 @@ module.exports = {
     extend: {
       colors: {
         white: "#fff",
-        gray: "#021526",
+        gainsboro: "#dbdbdb",
         lightslategray: "#808a93",
+        dimgray: "#676e76",
+        gray: "#021526",
         darkslategray: "#2d3648",
         orangered: "#f93b1d",
         orangeredHover: "#e5371a", // Hover effect for primary button
-        forestgreen: "#228B22", // Validation success color
-        orangered: "#f93b1d", // Validation error color
+        forestgreen: "#228B22",  // Validation error color
       },
       fontFamily: {
         firago: ["FiraGO", "sans-serif"], // Ensure FiraGO is loaded in your project

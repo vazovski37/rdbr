@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import FormField from '../../design-system/form-fields';
 import Cta from '../../design-system/cta';
-import { addAgent } from '../../services/postServices';
+import { addAgent } from '../../services/agentServices';
 
 interface AddAgentProps {
   onCancel: () => void; 

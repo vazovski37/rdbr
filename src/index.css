@@ -7,9 +7,7 @@
 /* Custom global styles */
 body {
   @apply leading-[normal] m-0; /* Tailwind utilities for margin and line-height */
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif; /* System font stack */
+  font-family: 'FiraGO', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif; /* System font stack */
   -webkit-font-smoothing: antialiased; /* Improve text rendering */
   -moz-osx-font-smoothing: grayscale; /* Improve text rendering */
 }
@@ -19,13 +17,13 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace; /* Set monospace fonts for code */
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace; /* Set monospace fonts for code */
 }
+
 .material-symbols-outlined {
   font-variation-settings:
-  'FILL' 0,
-  'wght' 400,
-  'GRAD' 0,
-  'opsz' 24
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
 }

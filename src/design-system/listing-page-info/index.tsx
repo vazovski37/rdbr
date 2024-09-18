@@ -30,7 +30,7 @@ const InfoItem = ({ icon, label, value }: InfoItemProps) => (
 const ListingPageInfo = ({ price, location, area, areaUnit, bedrooms, postalCode }: ListingPageInfoProps) => {
   return (
     <div className="relative w-full flex flex-col items-start justify-start gap-6 text-left text-[48px] text-gray font-firago">
-      <b className="self-stretch text-[#021526]">{price}</b>
+      <b className="self-stretch text-gray">{price}</b>
       <div className="flex flex-col items-start justify-center gap-4 text-5xl text-lightslategray">
         {/* Location */}
         <InfoItem icon={<LocationIcon />} label={location} value="" />

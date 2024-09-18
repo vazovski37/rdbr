@@ -1,16 +1,25 @@
 import React from 'react';
 
 interface CTAProps {
-  label: string; // Text to display inside the CTA
-  size?: 's' | 'm' | 'l'; // Size of the CTA: small, medium, large
-  type?: 'primary' | 'secondary' | 'grey'; // Type of the CTA: primary or secondary
-  className?: string; // Optional additional className for styling
-  iconSrc?: string; // Optional icon source for the 'l' size
-  onClick?: () => void; // Function to execute when the CTA is clicked
+  label: string; 
+  size?: 's' | 'm' | 'l'; 
+  type?: 'primary' | 'secondary' | 'grey'; 
+  className?: string; 
+  iconSrc?: string; 
+  onClick?: () => void; 
+  disabled?: boolean; 
 }
 
-const Cta = ({ label, size = 'm', type = 'primary', className = '', iconSrc, onClick }: CTAProps) => {
-  // Function to determine base styles based on size
+const Cta = ({
+  label,
+  size = 'm',
+  type = 'primary',
+  className = '',
+  iconSrc,
+  onClick,
+  disabled = false, 
+}: CTAProps) => {
+
   const getSizeStyles = () => {
     switch (size) {
       case 's':
@@ -24,15 +33,20 @@ const Cta = ({ label, size = 'm', type = 'primary', className = '', iconSrc, onC
     }
   };
 
-  // Function to determine styles based on type
   const getTypeStyles = () => {
     switch (type) {
       case 'primary':
-        return 'bg-orangered text-white hover:bg-orangeredHover';
+        return `bg-orangered text-white hover:bg-orangeredHover ${
+          disabled ? 'opacity-50 cursor-not-allowed' : ''
+        }`;
       case 'secondary':
-        return 'border-orangered border-[1px] border-solid text-orangered hover:bg-orangered hover:text-white';
+        return `border-orangered border-[1px] border-solid text-orangered hover:bg-orangered hover:text-white ${
+          disabled ? 'opacity-50 cursor-not-allowed' : ''
+        }`;
       case 'grey':
-        return 'rounded-lg bg-white border-lightslategray border-[1px] border-solid box-border text-[14px] font-medium font-firago text-lightslategray text-center hover:bg-lightslategray hover:text-white';
+        return `rounded-lg bg-white border-dimgray border-[1px] border-solid box-border text-[14px] font-medium font-firago text-dimgray text-center hover:bg-dimgray hover:text-white ${
+          disabled ? 'opacity-50 cursor-not-allowed' : ''
+        }`;
       default:
         return '';
     }
@@ -41,7 +55,7 @@ const Cta = ({ label, size = 'm', type = 'primary', className = '', iconSrc, onC
   return (
     <div
       className={`cursor-pointer relative rounded-lg flex flex-row items-center justify-center box-border font-firago ${getSizeStyles()} ${getTypeStyles()} ${className}`}
-      onClick={onClick} // Added onClick event handler
+      onClick={!disabled ? onClick : undefined}
     >
       {size === 'l' && (
         <span className="material-symbols-outlined w-[22px] h-[22px] mr-2">add</span>
