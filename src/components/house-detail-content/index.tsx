@@ -107,7 +107,7 @@ const HouseDetailContent: React.FC<HouseDetailContentProps> = ({
         />
 
         {isModalOpen && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <DeleteModal 
               onConfirm={handleConfirmDelete} 
               onCancel={handleCloseModal} 

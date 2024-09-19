@@ -3,7 +3,7 @@ import FormField from '../../design-system/form-fields/index';
 import { fetchAgents } from '../../services/agentServices';
 import useFetchRegions from '../../hooks/useFetchRegions';
 import useFetchCities from '../../hooks/useFetchCities';
-import useAgentModal from '../../hooks/useAgentModal'; // Import the custom hook
+import useAgentModal from '../../hooks/useAgentModal'; 
 
 interface AddHouseFormProps {
   onFormChange: (data: any) => void;
@@ -30,19 +30,19 @@ interface Agent {
 }
 
 const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
-  const initialFormData = JSON.parse(localStorage.getItem('formData') || '{}'); // Get formData from localStorage or set default
+  const initialFormData = JSON.parse(localStorage.getItem('formData') || '{}'); 
   const [formData, setFormData] = useState<FormData>({
     address: initialFormData.address || '',
     postalCode: initialFormData.postalCode || '',
-    region: initialFormData.region || null,  // Initialize as number or null
-    city: initialFormData.city || null,      // Initialize as number or null
+    region: initialFormData.region || null,  
+    city: initialFormData.city || null,      
     price: initialFormData.price || '',
     area: initialFormData.area || '',
     bedrooms: initialFormData.bedrooms || '',
     description: initialFormData.description || '',
-    agent: initialFormData.agent || null,    // Initialize as number or null
-    imageFile: null,                         // Files can't be stored in localStorage
-    isRental: initialFormData.isRental || '1', // Initialize as '1' for rental by default
+    agent: initialFormData.agent || null,    
+    imageFile: null,                         
+    isRental: initialFormData.isRental || '1', 
   });
 
   const [agents, setAgents] = useState<Agent[]>([]);
@@ -54,7 +54,7 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
   const [cityName, setCityName] = useState("");
   const [agentName, setAgentName] = useState("");
 
-  // Fetch Agents, Regions, and Cities
+  
   useEffect(() => {
     loadAgents();
   }, []);
@@ -102,7 +102,7 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
     const selectedRegion = regions.find(region => region.name === name);
     if (selectedRegion) {
       updateFormData('region', selectedRegion.id);  
-      setRegionName(selectedRegion.name); // Set region name for display
+      setRegionName(selectedRegion.name); 
     }
   };
 
@@ -110,7 +110,7 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
     const selectedCity = cities.find(city => city.name === name);
     if (selectedCity) {
       updateFormData('city', selectedCity.id); 
-      setCityName(selectedCity.name); // Set city name for display
+      setCityName(selectedCity.name); 
     }
   };
 
@@ -118,13 +118,12 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
     const selectedAgent = agents.find(agent => `${agent.name} ${agent.surname}` === name);
     if (selectedAgent) {
       updateFormData('agent', selectedAgent.id);
-      setAgentName(`${selectedAgent.name} ${selectedAgent.surname}`); // Set agent name for display
+      setAgentName(`${selectedAgent.name} ${selectedAgent.surname}`); 
     }
   };
 
   return (
     <div className="relative w-[790px] flex flex-col items-start justify-start gap-20 text-left text-base text-gray-100 font-helvetica-neue">
-      {/* Transaction Type */}
       <div>
         <div className="relative text-[16px] font-medium">გარიგების ტიპი</div>
         <FormField
@@ -138,7 +137,6 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
         />
       </div>
 
-      {/* Location */}
       <div className="flex flex-col items-start justify-start gap-[22px] w-[790px]">
         <div className="relative text-[16px] font-medium">მდებარეობა</div>
         <div className="flex flex-row flex-wrap gap-5 text-sm text-gray-200 font-firago w-full">
@@ -179,7 +177,6 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
         </div>
       </div>
 
-      {/* House Details */}
       <div className="flex flex-col gap-[22px]">
         <div className="flex flex-col items-start justify-start gap-[22px] w-[790px]">
           <div className="relative text-[16px] font-medium">ბინის დეტალები</div>
@@ -217,7 +214,6 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
           </div>
         </div>
 
-        {/* Description */}
         <FormField
           type="longtext"
           label="აღწერა"
@@ -229,7 +225,6 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
           successMessage="მინიმუმ ხუთი სიტყვა"
         />
 
-        {/* Image Upload */}
         <FormField
           type="image"
           label="ატვირთეთ ფოტო"
@@ -239,7 +234,6 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
         />
       </div>
 
-      {/* Agent Selection */}
       <div className="w-[790px] flex flex-col items-start justify-start gap-[15px]">
         <div className="self-stretch relative uppercase font-medium">აგენტი</div>
         <div className="h-16 flex flex-col items-start justify-start text-sm text-gray-200 font-firago">
@@ -252,8 +246,6 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
           />
         </div>
       </div>
-
-      {/* Add Agent Modal */}
       <AgentModal />
     </div>
   );

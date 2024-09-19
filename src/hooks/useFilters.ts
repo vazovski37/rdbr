@@ -82,8 +82,6 @@ export const useRegionFilter = (
   };
 };
 
-
-
 // Hook for Area Filter
 export const useAreaFilter = (onApplyAreaFilter: (min: number, max: number) => void) => {
   const [minArea, setMinArea] = useState<number | undefined>(undefined);
@@ -94,7 +92,7 @@ export const useAreaFilter = (onApplyAreaFilter: (min: number, max: number) => v
     onApplyAreaFilter(min, max);
     setMinArea(min);
     setMaxArea(max);
-    const filter = min !== undefined && max !== undefined ? `Area: ${min} - ${max} m²` : null;
+    const filter = min !== undefined && max !== undefined ? `${min} მ² - ${max} მ²` : null;
     setAreaFilter(filter);
   };
 
@@ -124,7 +122,7 @@ export const usePriceFilter = (onApplyPriceFilter: (min: number, max: number) =>
     onApplyPriceFilter(min, max);
     setMinPrice(min);
     setMaxPrice(max);
-    const filter = min !== undefined && max !== undefined ? `Price: ₾${min} - ₾${max}` : null;
+    const filter = min !== undefined && max !== undefined ? `${min}₾ - ${max}₾` : null;
     setPriceFilter(filter);
   };
 
@@ -152,7 +150,7 @@ export const useBedroomFilter = (onApplyBedroomFilter: (bedrooms: number) => voi
   const handleApplyBedroomFilter = (bedrooms: number) => {
     onApplyBedroomFilter(bedrooms);
     setSelectedBedrooms(bedrooms);
-    const filter = bedrooms ? `${bedrooms} Bedrooms` : null;
+    const filter = bedrooms ? `${bedrooms}` : null;
     setBedroomFilter(filter);
   };
 

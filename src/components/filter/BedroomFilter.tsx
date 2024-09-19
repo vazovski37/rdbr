@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
+import Cta from '../../design-system/cta';
 
 interface BedroomFilterProps {
   selectedBedrooms: number;
-  onApply: (bedrooms: number) => void; // Apply the selected bedroom filter
-  onClose: () => void; // Close the dropdown
+  onApply: (bedrooms: number) => void;
+  onClose: () => void;
 }
 
 const BedroomFilter: React.FC<BedroomFilterProps> = ({ selectedBedrooms, onApply, onClose }) => {
   const [bedrooms, setBedrooms] = useState<number>(selectedBedrooms);
-  const [bedroomCounts, setBedroomCounts] = useState<number[]>([]); // State to store bedroom counts
+  const [bedroomCounts, setBedroomCounts] = useState<number[]>([]);
 
   useEffect(() => {
-    // Fetch bedroom counts from localStorage
     const bedroomCountsFromStorage = localStorage.getItem('bedroomCounts');
 
     if (bedroomCountsFromStorage) {
@@ -25,22 +25,21 @@ const BedroomFilter: React.FC<BedroomFilterProps> = ({ selectedBedrooms, onApply
   }, []);
 
   const handleApplyClick = () => {
-    onApply(bedrooms); // Apply filter with selected number of bedrooms
-    onClose(); // Close the dropdown
+    onApply(bedrooms);
+    onClose();
   };
 
   return (
     <div className="relative shadow-[5px_5px_12px_rgba(2,_21,_38,_0.08)] rounded-[10px] bg-white border-gainsboro border-[1px] border-solid box-border w-full flex flex-col items-start justify-start p-6 gap-8 text-left text-[16px] text-gray-100 font-firago">
       <div className="flex flex-col items-start justify-start gap-6">
-        <div className="relative font-medium">საძინებლების რაოდენობა</div>
+        <span className="cursor-default text-[16px] font-medium font-firago text-gray text-left inline-block">საძინებლების რაოდენობა</span>
         <div className="flex flex-wrap gap-2">
-          {/* Generate bedroom buttons from stored counts */}
           {bedroomCounts.map((num) => (
             <button
               key={num}
               onClick={() => setBedrooms(num)}
-              className={`flex items-center justify-center w-10 h-10 rounded-full border ${
-                bedrooms === num ? 'bg-orangered text-white' : 'bg-white text-gray-200 border-gray-300'
+              className={`rounded-md cursor-pointer border-lightslategray border-[1px] border-solid box-border h-[42px] w-[42px] flex flex-row items-center justify-center p-2.5 ${
+                bedrooms === num ? 'bg-orangered text-white' : 'bg-white text-lightslategray border-lightgray'
               }`}
             >
               {num}
@@ -48,10 +47,8 @@ const BedroomFilter: React.FC<BedroomFilterProps> = ({ selectedBedrooms, onApply
           ))}
         </div>
       </div>
-      <div className="w-[234px] flex flex-col items-end justify-center text-center text-sm text-white">
-        <button onClick={handleApplyClick} className="rounded-lg bg-orangered flex flex-row items-center justify-center py-2 px-3.5">
-          <div className="relative font-medium">არჩევა</div>
-        </button>
+      <div className="self-stretch flex flex-col items-end justify-center text-center text-sm text-white">
+        <Cta label="არჩევა" size="s" onClick={handleApplyClick} />
       </div>
     </div>
   );

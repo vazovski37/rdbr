@@ -58,6 +58,14 @@ const Filter = ({
     handleClearBedroomFilter,
   } = useBedroomFilter(onApplyBedroomFilter);
 
+  // Function to clear all filters
+  const handleClearAllFilters = () => {
+    handleClearRegionFilter();
+    handleClearAreaFilter();
+    handleClearPriceFilter();
+    handleClearBedroomFilter();
+  };
+
   const toggleDropdown = (filterName: string) => {
     if (openFilter === filterName) {
       setOpenFilter(null);
@@ -66,6 +74,14 @@ const Filter = ({
       setOpenFilter(filterName);
     }
   };
+
+  // Check if any filters are applied
+  const isAnyFilterApplied = !!(
+    regionFilter.length ||
+    areaFilter ||
+    priceFilter ||
+    bedroomFilter
+  );
 
   return (
     <div>
@@ -123,7 +139,9 @@ const Filter = ({
           />
         </Dropdown>
       </div>
-      <div className="flex mt-[16px] h-[29px] mb-[32px] gap-2">
+
+      {/* Filter Badges and Clear All Button */}
+      <div className="flex mt-[16px] h-[29px] mb-[32px] gap-2 items-center">
         {regionFilter.map((regionName, index) => (
           <FilterBadge
             key={index}
@@ -134,6 +152,16 @@ const Filter = ({
         {areaFilter && <FilterBadge label={areaFilter} onClick={handleClearAreaFilter} />}
         {priceFilter && <FilterBadge label={priceFilter} onClick={handleClearPriceFilter} />}
         {bedroomFilter && <FilterBadge label={bedroomFilter} onClick={handleClearBedroomFilter} />}
+
+        {/* Display Clear All Button if any filter is applied */}
+        {isAnyFilterApplied && (
+          <div
+            className="relative text-[14px] font-medium font-firago text-gray text-center cursor-pointer"
+            onClick={handleClearAllFilters}
+          >
+            გასუფთავება
+          </div>
+        )}
       </div>
     </div>
   );

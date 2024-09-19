@@ -1,5 +1,3 @@
-// src/components/home-header/index.tsx
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Cta from '../../design-system/cta';

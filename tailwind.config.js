@@ -11,6 +11,7 @@ module.exports = {
         lightslategray: "#808a93",
         dimgray: "#676e76",
         gray: "#021526",
+        lightgray: "rgba(2, 21, 38, 0.4)",
         darkslategray: "#2d3648",
         orangered: "#f93b1d",
         orangeredHover: "#e5371a", // Hover effect for primary button
