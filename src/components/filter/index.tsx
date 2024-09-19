@@ -62,7 +62,7 @@ const Filter = ({
     if (openFilter === filterName) {
       setOpenFilter(null);
     } else {
-      syncPendingWithApplied(); // Sync when opening the dropdown
+      syncPendingWithApplied();
       setOpenFilter(filterName);
     }
   };
@@ -128,7 +128,7 @@ const Filter = ({
           <FilterBadge
             key={index}
             label={regionName}
-            onClick={() => handleDeselectAppliedRegion(regionName)} // Handle applied region deselection
+            onClick={() => handleDeselectAppliedRegion(regionName)}
           />
         ))}
         {areaFilter && <FilterBadge label={areaFilter} onClick={handleClearAreaFilter} />}

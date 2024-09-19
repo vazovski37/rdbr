@@ -26,7 +26,7 @@ const RegionFilter: React.FC<RegionFilterProps> = ({
     if (regions.length > 0) {
       setRegionNames(regions);
     }
-  }, [regions, setRegionNames]); // Ensure this does not cause an infinite loop
+  }, [regions]);
 
   const handleRegionToggle = (regionId: string) => {
     if (pendingRegions.includes(regionId)) {
@@ -37,7 +37,7 @@ const RegionFilter: React.FC<RegionFilterProps> = ({
   };
 
   const handleApplyClick = () => {
-    onApply(); // Apply the selected filters only when this button is clicked
+    onApply();
     onClose();
   };
 

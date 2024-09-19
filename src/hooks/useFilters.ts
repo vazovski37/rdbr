@@ -8,48 +8,47 @@ type Region = {
 export const useRegionFilter = (
   onApplyRegionFilter: (regions: string[]) => void
 ) => {
-  const [appliedRegions, setAppliedRegions] = useState<string[]>([]); // arr1 - Applied filters
-  const [pendingRegions, setPendingRegions] = useState<string[]>([]); // arr2 - Changes in the dropdown
+  const [appliedRegions, setAppliedRegions] = useState<string[]>([]);
+  const [pendingRegions, setPendingRegions] = useState<string[]>([]);
   const [regionNamesMap, setRegionNamesMap] = useState<Record<string, string>>(
     {}
   );
   const [regionFilter, setRegionFilter] = useState<string[]>([]);
 
-  // Map region IDs to names
   const setRegionNames = (regions: Region[]) => {
-    const namesMap: Record<string, string> = {};
+    const newNamesMap: Record<string, string> = {};
     regions.forEach((region) => {
-      namesMap[region.id.toString()] = region.name;
+      newNamesMap[region.id.toString()] = region.name;
     });
-    setRegionNamesMap(namesMap);
+    
+    if (JSON.stringify(newNamesMap) !== JSON.stringify(regionNamesMap)) {
+      setRegionNamesMap(newNamesMap);
+    }
   };
 
-  // Sync pendingRegions with appliedRegions when opening the dropdown
   const syncPendingWithApplied = () => {
     setPendingRegions(appliedRegions);
   };
 
-  // Apply changes from pendingRegions to appliedRegions when "Apply" is clicked
   const handleApplyRegionFilter = () => {
     const selectedRegionNames = pendingRegions
       .map((id) => regionNamesMap[id])
       .filter(Boolean);
     setRegionFilter(selectedRegionNames);
-    setAppliedRegions(pendingRegions); // Update applied filters with the pending ones
-    onApplyRegionFilter(pendingRegions); // Trigger the main filter update
+    setAppliedRegions(pendingRegions); 
+    onApplyRegionFilter(pendingRegions);
   };
 
-  // Handle checkbox selection in dropdown
   const handleSelectRegion = (regionId: string) => {
-    setPendingRegions((prev) => [...prev, regionId]);
+    if (!pendingRegions.includes(regionId)) {
+      setPendingRegions((prev) => [...prev, regionId]);
+    }
   };
 
-  // Handle checkbox deselection in dropdown
   const handleDeselectRegion = (regionId: string) => {
     setPendingRegions((prev) => prev.filter((id) => id !== regionId));
   };
 
-  // Handle deselection from applied filters (badges)
   const handleDeselectAppliedRegion = (regionName: string) => {
     const regionId = Object.keys(regionNamesMap).find(
       (key) => regionNamesMap[key] === regionName
@@ -58,7 +57,7 @@ export const useRegionFilter = (
       const updatedRegions = appliedRegions.filter((id) => id !== regionId);
       setAppliedRegions(updatedRegions);
       setRegionFilter((prev) => prev.filter((name) => name !== regionName));
-      onApplyRegionFilter(updatedRegions); // Update main results
+      onApplyRegionFilter(updatedRegions);
     }
   };
 
@@ -79,7 +78,7 @@ export const useRegionFilter = (
     handleDeselectAppliedRegion,
     handleClearRegionFilter,
     setRegionNames,
-    syncPendingWithApplied, // Sync pending with applied when needed
+    syncPendingWithApplied,
   };
 };
 
