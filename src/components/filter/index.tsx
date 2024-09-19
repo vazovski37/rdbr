@@ -14,22 +14,25 @@ interface FilterProps {
   onApplyBedroomFilter: (bedrooms: number) => void;
 }
 
-const Filter: React.FC<FilterProps> = ({
+const Filter = ({
   onApplyRegionFilter,
   onApplyAreaFilter,
   onApplyPriceFilter,
   onApplyBedroomFilter,
-}) => {
-  // Centralized state to manage which filter dropdown is open
+}: FilterProps) => {
   const [openFilter, setOpenFilter] = useState<string | null>(null);
 
   const {
-    selectedRegions,
+    appliedRegions,
+    pendingRegions,
     regionFilter,
     handleApplyRegionFilter,
     handleSelectRegion,
     handleDeselectRegion,
+    handleDeselectAppliedRegion,
     handleClearRegionFilter,
+    setRegionNames,
+    syncPendingWithApplied,
   } = useRegionFilter(onApplyRegionFilter);
 
   const {
@@ -59,6 +62,7 @@ const Filter: React.FC<FilterProps> = ({
     if (openFilter === filterName) {
       setOpenFilter(null);
     } else {
+      syncPendingWithApplied(); // Sync when opening the dropdown
       setOpenFilter(filterName);
     }
   };
@@ -72,11 +76,12 @@ const Filter: React.FC<FilterProps> = ({
           onClick={() => toggleDropdown('region')}
         >
           <RegionFilter
-            selectedRegions={selectedRegions}
+            pendingRegions={pendingRegions}
             onSelectRegion={handleSelectRegion}
             onDeselectRegion={handleDeselectRegion}
             onApply={handleApplyRegionFilter}
             onClose={() => setOpenFilter(null)}
+            setRegionNames={setRegionNames}
           />
         </Dropdown>
 
@@ -92,7 +97,6 @@ const Filter: React.FC<FilterProps> = ({
             onClose={() => setOpenFilter(null)}
           />
         </Dropdown>
-
 
         <Dropdown
           label="ფასი"
@@ -120,7 +124,13 @@ const Filter: React.FC<FilterProps> = ({
         </Dropdown>
       </div>
       <div className="flex mt-[16px] h-[29px] mb-[32px] gap-2">
-        {regionFilter && <FilterBadge label={regionFilter} onClick={handleClearRegionFilter} />}
+        {regionFilter.map((regionName, index) => (
+          <FilterBadge
+            key={index}
+            label={regionName}
+            onClick={() => handleDeselectAppliedRegion(regionName)} // Handle applied region deselection
+          />
+        ))}
         {areaFilter && <FilterBadge label={areaFilter} onClick={handleClearAreaFilter} />}
         {priceFilter && <FilterBadge label={priceFilter} onClick={handleClearPriceFilter} />}
         {bedroomFilter && <FilterBadge label={bedroomFilter} onClick={handleClearBedroomFilter} />}

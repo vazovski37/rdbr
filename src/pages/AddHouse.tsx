@@ -1,20 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import AddHouseForm from '../components/add-house-form';
 import Cta from '../design-system/cta';
-import { useAddRealEstate } from '../hooks/useAddRealEstate'; 
+import { useAddRealEstate } from '../hooks/useAddRealEstate';
+import usePersistedFormData from '../hooks/usePersistedFormData'; 
 
 const AddHouse = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<any>({});
+  const [formData, setFormData, clearFormData] = usePersistedFormData('formData', {});
   const { handleAddRealEstate, loading, error } = useAddRealEstate(); 
 
   const handleSubmit = () => {
-    console.log('Submitted data:', formData);
-
     const realEstateData = {
       address: formData.address,
-      image: formData.imageFile,  // Use the File object directly
+      image: formData.imageFile,
       region_id: parseInt(formData.region),
       description: formData.description,
       city_id: parseInt(formData.city),
@@ -41,12 +40,15 @@ const AddHouse = () => {
 
       {error && <p className="text-red-500">{error}</p>}
 
-      <div className='flex flex-row gap-4 justify-end my-[90px] w-[790px] '>
+      <div className='flex flex-row gap-4 justify-end my-[90px] w-[790px]'>
         <Cta
           label={'გაუქმება'}
           size='s'
           type='secondary'
-          onClick={() => navigate('/')}
+          onClick={() => {
+            clearFormData();
+            navigate('/');
+          }}
         />
         <Cta
           label={'დაამატე ლისტინგში'}

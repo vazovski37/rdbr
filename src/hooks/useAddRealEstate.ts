@@ -25,7 +25,7 @@ export const useAddRealEstate = () => {
     setLoading(true);
     setError(null);
 
-    const formData = new FormData();  // Use FormData for file upload
+    const formData = new FormData();
     formData.append('address', realEstateData.address);
     formData.append('image', realEstateData.image);
     formData.append('region_id', realEstateData.region_id.toString());
@@ -41,12 +41,13 @@ export const useAddRealEstate = () => {
     try {
       const response = await addRealEstate(formData);
       console.log('Real estate created:', response);
-
+      localStorage.removeItem('formData');
       alert('Real estate added successfully!');
-      navigate('/');
+      navigate('/'); // Only navigate if no error occurs
     } catch (err: any) {
       console.error('Error adding real estate:', err);
       setError('An error occurred while adding real estate. Please try again.');
+      alert('An error occurred while adding real estate. Please try again.');
     } finally {
       setLoading(false);
     }

@@ -1,39 +1,89 @@
 import { useState } from 'react';
 
-// Hook for Region Filter
-export const useRegionFilter = (onApplyRegionFilter: (regions: string[]) => void) => {
-  const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
-  const [regionFilter, setRegionFilter] = useState<string | null>(null);
+type Region = {
+  id: number;
+  name: string;
+};
 
+export const useRegionFilter = (
+  onApplyRegionFilter: (regions: string[]) => void
+) => {
+  const [appliedRegions, setAppliedRegions] = useState<string[]>([]); // arr1 - Applied filters
+  const [pendingRegions, setPendingRegions] = useState<string[]>([]); // arr2 - Changes in the dropdown
+  const [regionNamesMap, setRegionNamesMap] = useState<Record<string, string>>(
+    {}
+  );
+  const [regionFilter, setRegionFilter] = useState<string[]>([]);
+
+  // Map region IDs to names
+  const setRegionNames = (regions: Region[]) => {
+    const namesMap: Record<string, string> = {};
+    regions.forEach((region) => {
+      namesMap[region.id.toString()] = region.name;
+    });
+    setRegionNamesMap(namesMap);
+  };
+
+  // Sync pendingRegions with appliedRegions when opening the dropdown
+  const syncPendingWithApplied = () => {
+    setPendingRegions(appliedRegions);
+  };
+
+  // Apply changes from pendingRegions to appliedRegions when "Apply" is clicked
   const handleApplyRegionFilter = () => {
-    onApplyRegionFilter(selectedRegions);
-    const filter = selectedRegions.length > 0 ? selectedRegions.join(', ') : null;
-    setRegionFilter(filter);
+    const selectedRegionNames = pendingRegions
+      .map((id) => regionNamesMap[id])
+      .filter(Boolean);
+    setRegionFilter(selectedRegionNames);
+    setAppliedRegions(pendingRegions); // Update applied filters with the pending ones
+    onApplyRegionFilter(pendingRegions); // Trigger the main filter update
   };
 
-  const handleSelectRegion = (region: string) => {
-    setSelectedRegions((prev) => [...prev, region]);
+  // Handle checkbox selection in dropdown
+  const handleSelectRegion = (regionId: string) => {
+    setPendingRegions((prev) => [...prev, regionId]);
   };
 
-  const handleDeselectRegion = (region: string) => {
-    setSelectedRegions((prev) => prev.filter((r) => r !== region));
+  // Handle checkbox deselection in dropdown
+  const handleDeselectRegion = (regionId: string) => {
+    setPendingRegions((prev) => prev.filter((id) => id !== regionId));
+  };
+
+  // Handle deselection from applied filters (badges)
+  const handleDeselectAppliedRegion = (regionName: string) => {
+    const regionId = Object.keys(regionNamesMap).find(
+      (key) => regionNamesMap[key] === regionName
+    );
+    if (regionId) {
+      const updatedRegions = appliedRegions.filter((id) => id !== regionId);
+      setAppliedRegions(updatedRegions);
+      setRegionFilter((prev) => prev.filter((name) => name !== regionName));
+      onApplyRegionFilter(updatedRegions); // Update main results
+    }
   };
 
   const handleClearRegionFilter = () => {
-    setSelectedRegions([]);
+    setPendingRegions([]);
+    setAppliedRegions([]);
+    setRegionFilter([]);
     onApplyRegionFilter([]);
-    setRegionFilter(null);
   };
 
   return {
-    selectedRegions,
+    appliedRegions,
+    pendingRegions,
     regionFilter,
     handleApplyRegionFilter,
     handleSelectRegion,
     handleDeselectRegion,
+    handleDeselectAppliedRegion,
     handleClearRegionFilter,
+    setRegionNames,
+    syncPendingWithApplied, // Sync pending with applied when needed
   };
 };
+
+
 
 // Hook for Area Filter
 export const useAreaFilter = (onApplyAreaFilter: (min: number, max: number) => void) => {

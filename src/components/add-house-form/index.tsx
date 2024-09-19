@@ -12,15 +12,15 @@ interface AddHouseFormProps {
 interface FormData {
   address: string;
   postalCode: string;
-  region: string;
-  city: string;
+  region: number | null;
+  city: number | null;
   price: string;
   area: string;
   bedrooms: string;
   description: string;
-  agent: string;
+  agent: number | null;
   imageFile: File | null;
-  isRental: string; // Add isRental to FormData as a string
+  isRental: string;
 }
 
 interface Agent {
@@ -30,28 +30,50 @@ interface Agent {
 }
 
 const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
+  const initialFormData = JSON.parse(localStorage.getItem('formData') || '{}'); // Get formData from localStorage or set default
   const [formData, setFormData] = useState<FormData>({
-    address: '',
-    postalCode: '',
-    region: '',
-    city: '',
-    price: '',
-    area: '',
-    bedrooms: '',
-    description: '',
-    agent: '',
-    imageFile: null,
-    isRental: '1', // Initialize isRental as '1' for rental by default
+    address: initialFormData.address || '',
+    postalCode: initialFormData.postalCode || '',
+    region: initialFormData.region || null,  // Initialize as number or null
+    city: initialFormData.city || null,      // Initialize as number or null
+    price: initialFormData.price || '',
+    area: initialFormData.area || '',
+    bedrooms: initialFormData.bedrooms || '',
+    description: initialFormData.description || '',
+    agent: initialFormData.agent || null,    // Initialize as number or null
+    imageFile: null,                         // Files can't be stored in localStorage
+    isRental: initialFormData.isRental || '1', // Initialize as '1' for rental by default
   });
 
   const [agents, setAgents] = useState<Agent[]>([]);
   const { regions } = useFetchRegions();
   const { cities } = useFetchCities();
-  const { openAgentModal, AgentModal } = useAgentModal(); // Use the custom hook
+  const { openAgentModal, AgentModal } = useAgentModal();
+  
+  const [regionName, setRegionName] = useState("");
+  const [cityName, setCityName] = useState("");
+  const [agentName, setAgentName] = useState("");
 
+  // Fetch Agents, Regions, and Cities
   useEffect(() => {
     loadAgents();
   }, []);
+
+  useEffect(() => {
+    if (regions.length > 0 && cities.length > 0 && agents.length > 0) {
+      const matchingRegion = regions.find(region => region.id === formData.region);
+      const matchingCity = cities.find(city => city.id === formData.city);
+      const matchingAgent = agents.find(agent => agent.id === formData.agent);
+
+      if (matchingRegion) setRegionName(matchingRegion.name);
+      if (matchingCity) setCityName(matchingCity.name);
+      if (matchingAgent) setAgentName(`${matchingAgent.name} ${matchingAgent.surname}`);
+    }
+  }, [regions, cities, agents, formData.region, formData.city, formData.agent]);
+
+  useEffect(() => {
+    localStorage.setItem('formData', JSON.stringify(formData));
+  }, [formData]);
 
   const loadAgents = async () => {
     try {
@@ -70,12 +92,34 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
 
   const handleImageUpload = (file: File) => {
     updateFormData('imageFile', file);
-    console.log('Image uploaded:', file);
   };
 
   const handleImageDelete = () => {
     updateFormData('imageFile', null);
-    console.log('Image deleted');
+  };
+
+  const handleRegionChange = (name: string) => {
+    const selectedRegion = regions.find(region => region.name === name);
+    if (selectedRegion) {
+      updateFormData('region', selectedRegion.id);  
+      setRegionName(selectedRegion.name); // Set region name for display
+    }
+  };
+
+  const handleCityChange = (name: string) => {
+    const selectedCity = cities.find(city => city.name === name);
+    if (selectedCity) {
+      updateFormData('city', selectedCity.id); 
+      setCityName(selectedCity.name); // Set city name for display
+    }
+  };
+
+  const handleAgentChange = (name: string) => {
+    const selectedAgent = agents.find(agent => `${agent.name} ${agent.surname}` === name);
+    if (selectedAgent) {
+      updateFormData('agent', selectedAgent.id);
+      setAgentName(`${selectedAgent.name} ${selectedAgent.surname}`); // Set agent name for display
+    }
   };
 
   return (
@@ -88,8 +132,8 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
           label=""
           isRental={formData.isRental === '1'}
           onRadioChange={(value) => {
-            const isRentalValue = value ? '1' : '0'; // Convert boolean to '1' or '0'
-            updateFormData('isRental', isRentalValue); // Update formData with '0' or '1'
+            const isRentalValue = value ? '1' : '0';
+            updateFormData('isRental', isRentalValue);
           }}
         />
       </div>
@@ -122,23 +166,15 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
             type="dropdown"
             label="რეგიონი"
             options={regions.map(region => region.name)}
-            onSelect={(value) => {
-              const selectedRegion = regions.find(region => region.name === value);
-              if (selectedRegion) {
-                updateFormData('region', selectedRegion.id.toString());
-              }
-            }}
+            onSelect={handleRegionChange}
+            value={regionName || ''}
           />
           <FormField
             type="dropdown"
             label="ქალაქი"
-            options={cities.filter(city => city.region_id.toString() === formData.region).map(city => city.name)}
-            onSelect={(value) => {
-              const selectedCity = cities.find(city => city.name === value);
-              if (selectedCity) {
-                updateFormData('city', selectedCity.id.toString());
-              }
-            }}
+            options={cities.filter(city => city.region_id === formData.region).map(city => city.name)}
+            onSelect={handleCityChange}
+            value={cityName || ''}
           />
         </div>
       </div>
@@ -211,13 +247,8 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
             type="dropdown"
             label="აირჩიე"
             options={agents.map(agent => `${agent.name} ${agent.surname}`)}
-            onSelect={(value) => {
-              const selectedAgent = agents.find(agent => `${agent.name} ${agent.surname}` === value);
-              if (selectedAgent) {
-                updateFormData('agent', selectedAgent.id.toString());  // Set the agent ID correctly
-              }
-            }}
-            onAgentAdd={openAgentModal}  
+            onSelect={handleAgentChange}
+            value={agentName || ''}
           />
         </div>
       </div>

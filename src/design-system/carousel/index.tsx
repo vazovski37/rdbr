@@ -20,16 +20,16 @@ interface CarouselProps {
 
 const Carousel: React.FC<CarouselProps> = ({ items }) => {
   return (
-    <div className="relative w-full">
+    <div className="relative">
       <Swiper
-        
         slidesPerView={4}
+        spaceBetween={20} // Add 20px space between slides
         navigation={{
-          nextEl: '.swiper-button-next',
-          prevEl: '.swiper-button-prev',
+          nextEl: '.swiper-button-two',
+          prevEl: '.swiper-button-one',
         }}
         modules={[Navigation]}
-        className="swiper-container"
+        className="swiper-container rounded-lg overflow-hidden"
       >
         {items.map((item) => (
           <SwiperSlide key={item.id}>
@@ -48,11 +48,11 @@ const Carousel: React.FC<CarouselProps> = ({ items }) => {
       </Swiper>
 
       {/* Custom Navigation Buttons */}
-      <div className="swiper-button-prev absolute top-1/2 -left-12 transform -translate-y-1/2 p-2 bg-white rounded-full shadow-lg cursor-pointer z-10">
-        <span className="material-icons">chevron_left</span>
+      <div className="swiper-button-one absolute top-1/2 -left-12 transform -translate-y-1/2 p-2 bg-white rounded-full shadow-lg cursor-pointer z-10">
+        <span className="material-symbols-outlined">arrow_back</span>
       </div>
-      <div className="swiper-button-next absolute top-1/2 -right-12 transform -translate-y-1/2 p-2 bg-white rounded-full shadow-lg cursor-pointer z-10">
-        <span className="material-icons">chevron_right</span>
+      <div className="swiper-button-two absolute top-1/2 -right-12 transform -translate-y-1/2 p-2 bg-white rounded-full shadow-lg cursor-pointer z-10">
+        <span className="material-symbols-outlined">arrow_forward</span>
       </div>
     </div>
   );

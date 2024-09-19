@@ -33,7 +33,7 @@ const HomePage: React.FC = () => {
 
   return (
     <div className='mt-20' >
-      <div className='px-[160px]' >
+      <div className='w-[83.125%] m-auto' >
         <HomeHeader
           onAddAgent={openAgentModal}
           onApplyRegionFilter={handleApplyRegionFilter}
