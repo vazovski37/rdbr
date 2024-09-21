@@ -4,8 +4,8 @@ import Cta from '../../design-system/cta';
 import { addAgent } from '../../services/agentServices';
 
 interface AddAgentProps {
-  onCancel: () => void; 
-  onAddAgentSuccess: () => void;  
+  onCancel: () => void;
+  onAddAgentSuccess: () => void;
 }
 
 const AddAgent = ({ onCancel, onAddAgentSuccess }: AddAgentProps) => {
@@ -13,12 +13,20 @@ const AddAgent = ({ onCancel, onAddAgentSuccess }: AddAgentProps) => {
   const [surname, setSurname] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
-  const [avatar, setAvatar] = useState<File | null>(null); 
-  const [avatarPreview, setAvatarPreview] = useState<string>(''); 
+  const [avatar, setAvatar] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string>('');
 
   const handleAddAgent = async () => {
-    if (!avatar) {
-      alert('Please upload an avatar');
+    if (!name || !surname || !email || !phone || !avatar) {
+      alert('გთხოვთ შეავსოთ ყველა სავალდებულო ველი');
+      return;
+    }
+    if (!/^\d{9}$/.test(phone) || !phone.startsWith('5')) {
+      alert('ტელეფონის ნომერი უნდა იყოს ფორმატის 5XXXXXXXX');
+      return;
+    }
+    if (!email.endsWith('@redberry.ge')) {
+      alert('ელ-ფოსტა უნდა მთავრდებოდეს @redberry.ge-თ');
       return;
     }
 
@@ -27,29 +35,29 @@ const AddAgent = ({ onCancel, onAddAgentSuccess }: AddAgentProps) => {
     formData.append('surname', surname);
     formData.append('email', email);
     formData.append('phone', phone);
-    formData.append('avatar', avatar); 
+    formData.append('avatar', avatar);
 
     try {
       await addAgent(formData);
       alert('Agent added successfully!');
-      onAddAgentSuccess(); 
+      onAddAgentSuccess();
     } catch (error) {
       console.error('Error adding agent:', error);
     }
   };
 
   const handleImageUpload = (file: File) => {
-    setAvatar(file); 
+    setAvatar(file);
     const reader = new FileReader();
     reader.onloadend = () => {
-      setAvatarPreview(reader.result as string); 
+      setAvatarPreview(reader.result as string);
     };
-    reader.readAsDataURL(file); 
+    reader.readAsDataURL(file);
   };
 
   const handleImageDelete = () => {
-    setAvatar(null); 
-    setAvatarPreview(''); 
+    setAvatar(null);
+    setAvatarPreview('');
   };
 
   return (
@@ -70,7 +78,7 @@ const AddAgent = ({ onCancel, onAddAgentSuccess }: AddAgentProps) => {
           />
           <FormField
             type="text"
-            label="გვარი"
+            label="გვარი *"
             placeholder="გვარი"
             value={surname}
             onChange={(e) => setSurname(e.target.value)}
@@ -83,21 +91,21 @@ const AddAgent = ({ onCancel, onAddAgentSuccess }: AddAgentProps) => {
         <div className="flex flex-col md:flex-row justify-between gap-6">
           <FormField
             type="text"
-            label="ელ-ფოსტა*"
+            label="ელ-ფოსტა *"
             placeholder="ელ-ფოსტა"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            isValid={email.includes('@redberry.ge')}
+            isValid={email.endsWith('@redberry.ge')}
             errorMessage="გამოიყენეთ @redberry.ge ფოსტა"
             successMessage="გამოიყენეთ @redberry.ge ფოსტა"
           />
           <FormField
             type="text"
-            label="ტელეფონის ნომერი"
+            label="ტელეფონის ნომერი *"
             placeholder="ტელეფონის ნომერი"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            isValid={/^\d+$/.test(phone)}
+            isValid={/^\d{9}$/.test(phone) && phone.startsWith('5')}
             errorMessage="მხოლოდ რიცხვები"
             successMessage="მხოლოდ რიცხვები"
           />
@@ -107,7 +115,7 @@ const AddAgent = ({ onCancel, onAddAgentSuccess }: AddAgentProps) => {
           <FormField
             type="image"
             label="ატვირთეთ ფოტო *"
-            imageUrl={avatarPreview} 
+            imageUrl={avatarPreview}
             onImageUpload={handleImageUpload}
             onImageDelete={handleImageDelete}
           />
