@@ -1,5 +1,4 @@
-import { image } from 'html2canvas/dist/types/css/types/image';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface FormFieldProps {
   label?: string;
@@ -39,12 +38,16 @@ const FormField = ({
   onImageUpload,
   onImageDelete,
   onRadioChange,
-  
 }: FormFieldProps) => {
   const [hasTyped, setHasTyped] = useState(false);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState(value);
   const [selectedRadio, setSelectedRadio] = useState<boolean>(isRental);
+
+  // Synchronize the internal selectedValue state with the external value prop
+  useEffect(() => {
+    setSelectedValue(value);
+  }, [value]);
 
   const handleRadioChange = (value: boolean) => {
     setSelectedRadio(value);
@@ -117,7 +120,7 @@ const FormField = ({
             <span className={`material-symbols-outlined ${hasTyped && !isValid ? 'text-orangered' : isValid ? 'text-forestgreen' : 'text-[#021526]'}`}>
               check
             </span>
-            <div className={`relative  text-[14px] ${hasTyped && !isValid ? 'text-orangered' : isValid ? 'text-forestgreen' : 'text-[#021526]'}`}>
+            <div className={`relative text-[14px] ${hasTyped && !isValid ? 'text-orangered' : isValid ? 'text-forestgreen' : 'text-[#021526]'}`}>
               {hasTyped ? (isValid ? successMessage : errorMessage) : successMessage}
             </div>
           </div>
@@ -155,7 +158,7 @@ const FormField = ({
                   key={index}
                   className={`w-full border-[1px] bg-white border-solid border-lightslategray p-2.5 hover:bg-gray-100 cursor-pointer flex items-center ${
                     index === options.length - 1 ? 'rounded-b-md' : ''
-                  } ${!onAgentAdd &&  index === 0 ? 'border-t-1' : 'border-t-0' } `}
+                  } ${!onAgentAdd && index === 0 ? 'border-t-1' : 'border-t-0'}`}
                   onClick={() => handleSelect(option)}
                 >
                   <div className="relative">{option}</div>

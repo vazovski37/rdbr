@@ -14,7 +14,6 @@ const useAgentModal = () => {
 
   const handleAddAgentSuccess = () => {
     setIsAgentModalOpen(false);
-    // Add any additional logic needed after adding an agent, like refreshing data
   };
 
   const AgentModal: React.FC = () => (

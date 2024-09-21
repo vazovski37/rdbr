@@ -1,25 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import FormField from '../../design-system/form-fields/index';
-import { fetchAgents } from '../../services/agentServices';
-import useFetchRegions from '../../hooks/useFetchRegions';
+import FormField from '../../design-system/form-fields';
+import useAgentModal from '../../hooks/useAgentModal';
 import useFetchCities from '../../hooks/useFetchCities';
-import useAgentModal from '../../hooks/useAgentModal'; 
+import useFetchRegions from '../../hooks/useFetchRegions';
+import { fetchAgents } from '../../services/agentServices';
 
 interface AddHouseFormProps {
-  onFormChange: (data: any) => void;
+  onFormChange: (updatedData: Partial<FormData>) => void;
+  formData: FormData;
 }
 
 interface FormData {
   address: string;
   postalCode: string;
-  region: number | null;
-  city: number | null;
+  region: { id: string; name: string };
+  city: { id: string; name: string };
   price: string;
   area: string;
   bedrooms: string;
   description: string;
-  agent: number | null;
-  imageFile: File | null;
+  agent: { id: string; name: string };
+  imageFile: string | null;
   isRental: string;
 }
 
@@ -29,51 +30,30 @@ interface Agent {
   surname: string;
 }
 
-const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
-  const initialFormData = JSON.parse(localStorage.getItem('formData') || '{}'); 
-  const [formData, setFormData] = useState<FormData>({
-    address: initialFormData.address || '',
-    postalCode: initialFormData.postalCode || '',
-    region: initialFormData.region || null,  
-    city: initialFormData.city || null,      
-    price: initialFormData.price || '',
-    area: initialFormData.area || '',
-    bedrooms: initialFormData.bedrooms || '',
-    description: initialFormData.description || '',
-    agent: initialFormData.agent || null,    
-    imageFile: null,                         
-    isRental: initialFormData.isRental || '1', 
-  });
-
+const AddHouseForm: React.FC<AddHouseFormProps> = ({ onFormChange, formData }) => {
+  const [localFormData, setLocalFormData] = useState<FormData>(formData);
   const [agents, setAgents] = useState<Agent[]>([]);
   const { regions } = useFetchRegions();
   const { cities } = useFetchCities();
   const { openAgentModal, AgentModal } = useAgentModal();
-  
-  const [regionName, setRegionName] = useState("");
-  const [cityName, setCityName] = useState("");
-  const [agentName, setAgentName] = useState("");
 
-  
+  const [regionName, setRegionName] = useState('');
+  const [cityName, setCityName] = useState('');
+  const [agentName, setAgentName] = useState('');
+
   useEffect(() => {
     loadAgents();
   }, []);
 
   useEffect(() => {
     if (regions.length > 0 && cities.length > 0 && agents.length > 0) {
-      const matchingRegion = regions.find(region => region.id === formData.region);
-      const matchingCity = cities.find(city => city.id === formData.city);
-      const matchingAgent = agents.find(agent => agent.id === formData.agent);
-
-      if (matchingRegion) setRegionName(matchingRegion.name);
-      if (matchingCity) setCityName(matchingCity.name);
-      if (matchingAgent) setAgentName(`${matchingAgent.name} ${matchingAgent.surname}`);
+      updateNames();
     }
-  }, [regions, cities, agents, formData.region, formData.city, formData.agent]);
+  }, [regions, cities, agents, localFormData.region, localFormData.city, localFormData.agent]);
 
   useEffect(() => {
-    localStorage.setItem('formData', JSON.stringify(formData));
-  }, [formData]);
+    onFormChange(localFormData);
+  }, [localFormData]);
 
   const loadAgents = async () => {
     try {
@@ -84,14 +64,31 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
     }
   };
 
+  const updateNames = () => {
+    const matchingRegion = regions.find((region) => String(region.id) === String(localFormData.region?.id));
+    const matchingCity = cities.find((city) => String(city.id) === String(localFormData.city?.id));
+    const matchingAgent = agents.find((agent) => String(agent.id) === String(localFormData.agent?.id));
+
+    setRegionName(matchingRegion ? matchingRegion.name : '');
+    setCityName(matchingCity ? matchingCity.name : '');
+    setAgentName(matchingAgent ? `${matchingAgent.name} ${matchingAgent.surname}` : '');
+  };
+
   const updateFormData = (key: keyof FormData, value: any) => {
-    const updatedData = { ...formData, [key]: value };
-    setFormData(updatedData);
-    onFormChange(updatedData);
+    setLocalFormData((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
   };
 
   const handleImageUpload = (file: File) => {
-    updateFormData('imageFile', file);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (e.target?.result) {
+        updateFormData('imageFile', e.target.result);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleImageDelete = () => {
@@ -99,26 +96,26 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
   };
 
   const handleRegionChange = (name: string) => {
-    const selectedRegion = regions.find(region => region.name === name);
+    const selectedRegion = regions.find((region) => region.name === name);
     if (selectedRegion) {
-      updateFormData('region', selectedRegion.id);  
-      setRegionName(selectedRegion.name); 
+      updateFormData('region', { id: String(selectedRegion.id), name: selectedRegion.name });
+      setRegionName(selectedRegion.name);
     }
   };
 
   const handleCityChange = (name: string) => {
-    const selectedCity = cities.find(city => city.name === name);
+    const selectedCity = cities.find((city) => city.name === name && city.region_id === parseInt(localFormData.region.id));
     if (selectedCity) {
-      updateFormData('city', selectedCity.id); 
-      setCityName(selectedCity.name); 
+      updateFormData('city', { id: String(selectedCity.id), name: selectedCity.name });
+      setCityName(selectedCity.name);
     }
   };
 
   const handleAgentChange = (name: string) => {
-    const selectedAgent = agents.find(agent => `${agent.name} ${agent.surname}` === name);
+    const selectedAgent = agents.find((agent) => `${agent.name} ${agent.surname}` === name);
     if (selectedAgent) {
-      updateFormData('agent', selectedAgent.id);
-      setAgentName(`${selectedAgent.name} ${selectedAgent.surname}`); 
+      updateFormData('agent', { id: String(selectedAgent.id), name: `${selectedAgent.name} ${selectedAgent.surname}` });
+      setAgentName(`${selectedAgent.name} ${selectedAgent.surname}`);
     }
   };
 
@@ -129,7 +126,7 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
         <FormField
           type="radio"
           label=""
-          isRental={formData.isRental === '1'}
+          isRental={localFormData.isRental === '1'}
           onRadioChange={(value) => {
             const isRentalValue = value ? '1' : '0';
             updateFormData('isRental', isRentalValue);
@@ -144,9 +141,9 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
             type="text"
             label="მისამართი"
             placeholder="შეიყვანეთ მისამართი"
-            value={formData.address}
+            value={localFormData.address}
             onChange={(e) => updateFormData('address', e.target.value)}
-            isValid={formData.address.length > 0}
+            isValid={localFormData.address.length > 0}
             errorMessage="მინიმუმ ორი სიმბოლო"
             successMessage="მინიმუმ ორი სიმბოლო"
           />
@@ -154,25 +151,25 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
             type="text"
             label="საფოსტო ინდექსი"
             placeholder="შეიყვანეთ საფოსტო ინდექსი"
-            value={formData.postalCode}
+            value={localFormData.postalCode}
             onChange={(e) => updateFormData('postalCode', e.target.value)}
-            isValid={/^\d+$/.test(formData.postalCode)}
+            isValid={/^\d+$/.test(localFormData.postalCode)}
             errorMessage="მხოლოდ რიცხვები"
             successMessage="მხოლოდ რიცხვები"
           />
           <FormField
             type="dropdown"
             label="რეგიონი"
-            options={regions.map(region => region.name)}
+            options={regions.map((region) => region.name)}
             onSelect={handleRegionChange}
-            value={regionName || ''}
+            value={regionName}
           />
           <FormField
             type="dropdown"
             label="ქალაქი"
-            options={cities.filter(city => city.region_id === formData.region).map(city => city.name)}
+            options={cities.filter((city) => city.region_id === parseInt(localFormData.region.id)).map((city) => city.name)}
             onSelect={handleCityChange}
-            value={cityName || ''}
+            value={cityName}
           />
         </div>
       </div>
@@ -185,9 +182,9 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
               type="text"
               label="ფასი"
               placeholder="შეიყვანეთ ფასი"
-              value={formData.price}
+              value={localFormData.price}
               onChange={(e) => updateFormData('price', e.target.value)}
-              isValid={/^\d+$/.test(formData.price)}
+              isValid={/^\d+$/.test(localFormData.price)}
               errorMessage="მხოლოდ რიცხვები"
               successMessage="მხოლოდ რიცხვები"
             />
@@ -195,9 +192,9 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
               type="text"
               label="ფართობი"
               placeholder="შეიყვანეთ ფართობი"
-              value={formData.area}
+              value={localFormData.area}
               onChange={(e) => updateFormData('area', e.target.value)}
-              isValid={/^\d+$/.test(formData.area)}
+              isValid={/^\d+$/.test(localFormData.area)}
               errorMessage="მხოლოდ რიცხვები"
               successMessage="მხოლოდ რიცხვები"
             />
@@ -205,9 +202,9 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
               type="text"
               label="საძინებლების რაოდენობა*"
               placeholder="შეიყვანეთ საძინებლების რაოდენობა"
-              value={formData.bedrooms}
+              value={localFormData.bedrooms}
               onChange={(e) => updateFormData('bedrooms', e.target.value)}
-              isValid={/^\d+$/.test(formData.bedrooms)}
+              isValid={/^\d+$/.test(localFormData.bedrooms)}
               errorMessage="მხოლოდ რიცხვები"
               successMessage="მხოლოდ რიცხვები"
             />
@@ -218,9 +215,9 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
           type="longtext"
           label="აღწერა"
           placeholder="შეიყვანეთ აღწერა"
-          value={formData.description}
+          value={localFormData.description}
           onChange={(e) => updateFormData('description', e.target.value)}
-          isValid={formData.description.split(' ').length >= 5}
+          isValid={localFormData.description.split(' ').length >= 5}
           errorMessage="მინიმუმ ხუთი სიტყვა"
           successMessage="მინიმუმ ხუთი სიტყვა"
         />
@@ -228,7 +225,7 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
         <FormField
           type="image"
           label="ატვირთეთ ფოტო"
-          imageUrl={formData.imageFile ? URL.createObjectURL(formData.imageFile) : ''}
+          imageUrl={localFormData.imageFile || ''}
           onImageUpload={handleImageUpload}
           onImageDelete={handleImageDelete}
         />
@@ -240,9 +237,10 @@ const AddHouseForm = ({ onFormChange }: AddHouseFormProps) => {
           <FormField
             type="dropdown"
             label="აირჩიე"
-            options={agents.map(agent => `${agent.name} ${agent.surname}`)}
+            options={agents.map((agent) => `${agent.name} ${agent.surname}`)}
             onSelect={handleAgentChange}
-            value={agentName || ''}
+            value={agentName}
+            onAgentAdd={openAgentModal} // Optional: Open modal to add a new agent
           />
         </div>
       </div>

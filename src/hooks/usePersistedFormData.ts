@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 
-const usePersistedFormData = (key: string, initialValue: any) => {
-  const [formData, setFormData] = useState(() => {
+const usePersistedFormData = <T>(key: string, initialValue: T): [T, Dispatch<SetStateAction<T>>, () => void] => {
+  const [formData, setFormData] = useState<T>(() => {
     const savedData = localStorage.getItem(key);
     return savedData ? JSON.parse(savedData) : initialValue;
   });
